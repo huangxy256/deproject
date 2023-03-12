@@ -1,4 +1,4 @@
-from func_ABC import *
+from deproject.parameters import *
 
 # print(Cap_A(1, 1, 0, 0))
 
