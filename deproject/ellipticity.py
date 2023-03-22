@@ -1,6 +1,5 @@
 from deproject.parameters import *
 
-# print(Cap_A(1, 1, 0, 0))
 
 def Ellipticity(zeta, xi, theta, phi):
     """Calculate ellipticity from axis ratios and angles of projection
@@ -24,4 +23,3 @@ def Ellipticity(zeta, xi, theta, phi):
     
     return e
 
-# print(Ellipticity(1, 1, 0, 0))

@@ -35,14 +35,14 @@ def Cap_C(zeta, xi, theta, phi):
         zeta (float): Aixs ratio b/a, 0<=zeta<=1
         xi (float): Axis ratio c/a
         theta (float): Poalr angle in spherical coordinate, in Radian
-        phi (float): Azimuthal angle in spherical coordinate, in Radian
+        phi (flsoat): Azimuthal angle in spherical coordinate, in Radian
 
     Returns:
         float: Parameter C from Binney 1985
     """
     return (np.sin(phi)**2 / zeta**2 + np.cos(phi)**2) / xi**2
 
-def small_f(zeta, xi, theta, phi):
+def Small_f(zeta, xi, theta, phi):
     """Calculate parameter f from Binney 1985
 
     Args:
