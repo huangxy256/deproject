@@ -55,3 +55,6 @@ def Small_f(zeta, xi, theta, phi):
         float: Paramater f from Binney 1985
     """
     return np.sin(theta)**2 * (np.cos(phi)**2 + np.sin(phi)**2 / zeta**2) + np.cos(theta)**2 / xi**2
+
+def juice_new():
+    return 1.2
