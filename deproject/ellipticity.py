@@ -8,7 +8,7 @@ def AxisRatio(zeta, xi, theta, phi):
     Args:
         zeta (float): Aixs ratio b/a, 0<=zeta<=1
         xi (float): Axis ratio c/a
-        theta (float): Poalr angle in spherical coordinate
+        theta (float): Polar angle in spherical coordinate
         phi (float): Azimuthal angle in spherical coordinate
 
     Returns:
@@ -30,7 +30,7 @@ def Ellipticity(zeta, xi, theta, phi):
     Args:
         zeta (float): Aixs ratio b/a, 0<=zeta<=1
         xi (float): Axis ratio c/a
-        theta (float): Poalr angle in spherical coordinate
+        theta (float): Polar angle in spherical coordinate
         phi (float): Azimuthal angle in spherical coordinate
 
     Returns:
@@ -40,6 +40,27 @@ def Ellipticity(zeta, xi, theta, phi):
     e = (1 - q) / (1 + q)
 
     return e
+
+def Orientation_phi(zeta, xi, theta, phi):
+    """Calculate the orientation of the projected ellipse
+
+    Args:
+        zeta (float): Aixs ratio b/a, 0<=zeta<=1
+        xi (float): Axis ratio c/a
+        theta (float): Polar angle in spherical coordinate
+        phi (float): Azimuthal angle in spherical coordinate
+
+    Returns:
+        float: angle between major axis of the projected ellipse and x axis
+    """
+    A = Cap_A(zeta, xi, theta, phi)
+    B = Cap_B(zeta, xi, theta, phi)
+    C = Cap_C(zeta, xi, theta, phi)
+
+    if A == C:
+        return 0.
+    elif A != C:
+        return np.arctan(B / (C - A)) / 2
 
 def Ellipticity_12(I_xy, x_grid, y_grid, weight_map = None):
     """_summary_
