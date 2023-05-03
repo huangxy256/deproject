@@ -60,7 +60,10 @@ def Orientation_phi(zeta, xi, theta, phi):
     if A == C:
         return 0.
     elif A != C:
-        return np.arctan(B / (C - A)) / 2
+        psi_2 = np.arctan(B / (A - C))
+        if psi_2 < 0:
+            psi_2 += np.pi
+        return psi_2 / 2
 
 def Ellipticity_12(I_xy, x_grid, y_grid, weight_map = None):
     """_summary_
