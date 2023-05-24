@@ -25,13 +25,13 @@ def Project_2d(x_grid, y_grid, zeta, xi, theta, phi, profile):
     cap_C = Cap_C(zeta=zeta, xi=xi, theta=theta, phi=phi)
     small_f = Small_f(zeta=zeta, xi=xi, theta=theta, phi=phi)
     
-    as_sq = cap_A * x_grid**2 + cap_B * x_grid * y_grid + cap_C * y_grid**2
+    as_sq = (cap_A * x_grid**2 + cap_B * x_grid * y_grid + cap_C * y_grid**2) / small_f
 
     Sigma = np.zeros_like(as_sq)
 
     for i in range(as_sq.shape[0]):
         for j in range(as_sq.shape[1]):
-            Sigma[i, j] = quad(profile.Density_in_project, 0, np.inf, args= (as_sq[i, j]))[0] * 2 / small_f
+            Sigma[i, j] = quad(profile.Density_in_project, 0, np.inf, args= (as_sq[i, j]))[0] * 2 / np.sqrt(small_f)
 
     return Sigma
 
@@ -62,6 +62,6 @@ def RadialProfile(x_major, zeta, xi, theta, phi, profile):
     Sigma_rad = np.zeros_like(as_sq_diag)
 
     for i in range(as_sq_diag.shape[0]):
-        Sigma_rad[i] = quad(profile.Density_in_project, 0, np.inf, args= (as_sq_diag[i]))[0] * 2 / small_f
+        Sigma_rad[i] = quad(profile.Density_in_project, 0, np.inf, args= (as_sq_diag[i]))[0] * 2 / np.sqrt(small_f)
 
     return Sigma_rad

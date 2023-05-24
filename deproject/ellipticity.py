@@ -65,7 +65,7 @@ def Orientation_phi(zeta, xi, theta, phi):
             psi_2 += np.pi
         return psi_2 / 2
 
-def Ellipticity_12(I_xy, x_grid, y_grid, weight_map = None):
+def Ellipticity_from_grid(I_xy, x_grid, y_grid, weight_map = None):
     """_summary_
 
     Args:
@@ -94,7 +94,7 @@ def Ellipticity_12(I_xy, x_grid, y_grid, weight_map = None):
 
     return e1, e2, e
 
-def center_xy(I_xy, x_grid, y_grid, weight_map = None):
+def Center_xy(I_xy, x_grid, y_grid, weight_map = None):
     """_summary_
 
     Args:
