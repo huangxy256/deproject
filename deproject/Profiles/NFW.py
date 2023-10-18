@@ -13,7 +13,7 @@ class NFW(object):
             if not ((rho0 != 0) and (alpha_Rs == None)):
                 raise ValueError('When unit is pix, input only Rs and rho0 in pixel unit!')
         else:
-            raise ValueError('Available units: [arcsec, pix].')
+            raise ValueError("Available units: ['arcsec', 'pix'].")
         self.rho0 = rho0
         self.Rs = Rs
 

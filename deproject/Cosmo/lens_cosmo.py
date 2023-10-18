@@ -1,22 +1,19 @@
+import numpy as np
 import deproject.constant as const
 from deproject.Cosmo.nfw_param import NFWParam
 
 class LensCosmo(object):
-    def __init__(self, z_lens, z_source, cosmo=None):
-        """set up the cosmology of the lensing system
+    def __init__(self, z_lens, z_source, cosmo):
+        """class to manage the physical units and distances present in a single plane lens with fixed input cosmology
 
         Args:
-            z_lens (float): redshift of lens
-            z_source (float): redshift of source
-            cosmo (object, optional): astropy.cosmology instance. Defaults to None (Planck 2018 cosmology).
+            z_lens (float): redshift of the lens
+            z_source (float): redshift of the lensing source
+            cosmo (astropy.cosmology instance): _description_
         """
         self.z_lens = z_lens
         self.z_source = z_source
-        if cosmo == None:
-            from astropy.cosmology import default_cosmology
-            self.cosmo = default_cosmology.get()
-        else:
-            self.cosmo = cosmo
+        self.cosmo = cosmo
         self.nfw_param = NFWParam(cosmo=cosmo)
 
     @property
@@ -35,7 +32,7 @@ class LensCosmo(object):
         Returns:
             float: value of angular diameter distance between lens and source in the given cosmology [Mpc]
         """
-        return (self.cosmo.angular_diameter_distance_z1z2(z_lens, z_source)).value
+        return (self.cosmo.angular_diameter_distance_z1z2(self.z_lens, self.z_source)).value
 
     @property
     def Dd(self):
@@ -44,7 +41,7 @@ class LensCosmo(object):
         Returns:
             float: value of angular diameter distance between observer (z=0) and the lens in the given cosmology [Mpc]
         """
-        return (self.cosmo.angular_diameter_distance(z_lens)).value
+        return (self.cosmo.angular_diameter_distance(self.z_lens)).value
 
     @property
     def Ds(self):
@@ -53,10 +50,10 @@ class LensCosmo(object):
         Returns:
             float: value of angular diameter distance between observer (z=0) and the source in the given cosmology [Mpc]
         """
-        return (self.cosmo.angular_diameter_distance(z_source)).value
+        return (self.cosmo.angular_diameter_distance(self.z_source)).value
 
     @property
-    def sigma_crit(self):
+    def Sigma_crit(self):
         """calculate Sigma_crit
 
         Returns:
@@ -69,7 +66,7 @@ class LensCosmo(object):
             self._sigma_crit_mpc = self.Ds / (self.Dd * self.Dds) * factor
         return self._sigma_crit_mpc
 
-    def phys2arcsec_lens(self, physical_Mpc):
+    def Mpc2arcsec_lens(self, physical_Mpc):
         """convert physical distance in lens plane to arcseconds
 
         Args:
@@ -80,7 +77,7 @@ class LensCosmo(object):
         """
         return physical_Mpc / self.Dd / const.arcsec
 
-    def arcsec2phys_lens(self, arcsec):
+    def arcsec2Mpc_lens(self, arcsec):
         """convert angular diameter to physical distance in Mpc
 
         Args:
@@ -118,7 +115,7 @@ class LensCosmo(object):
         rho0, Rs, r200 = self.nfwParam_physical(M, c)
         Rs_angle = Rs / self.Dd / const.arcsec # [arcsec]
         alpha_Rs = rho0 * (4 * Rs ** 2 * (1 + np.log(1. / 2.)))
-        alpha_Rs = alpha_Rs / self.sigma_crit / self.Dd / const.arcsec
+        alpha_Rs = alpha_Rs / self.Sigma_crit / self.Dd / const.arcsec
         return Rs_angle, alpha_Rs
 
     def hernquist_physical2angle(self, M, Rs):
@@ -133,5 +130,42 @@ class LensCosmo(object):
         """
         Rs_angle = Rs / self.Dd / const.arcsec # [arcsec]
         rhos = M / (2 * np.pi) / Rs**3 # [M_sun Mpc^-3]
-        sigma0 = rhos * Rs / self.sigma_crit
+        sigma0 = rhos * Rs / self.Sigma_crit
         return sigma0, Rs_angle
+
+    def sis_sigma_v2theta_E(self, v_sigma):
+        """convert velocity dispersion to Einstein radius for a SIS profile
+
+        Args:
+            v_sigma (float): velocity dispersion [km s^-1]
+
+        Returns:
+            float: Einstein radius [arcsec]
+        """
+        theta_E = 4 * np.pi * (v_sigma * 1000. / const.c)**2 * self.Dds / self.Ds / const.arcsec
+        return theta_E
+
+    def sis_sigma_v_sq2theta_E(self, v_sigma_sq):
+        """convert velocity dispersion square to Einstein radius for a SIS profile 
+
+        Args:
+            v_sigma_sq (float): square of velocity dispersion [km^2 s^-2]
+
+        Returns:
+            float: Einstein radius [arcsec]
+        """
+        theta_E = 4 * np.pi * v_sigma_sq * 1000**2 / (const.c)**2 * self.Dds / self.Ds / const.arcsec
+        return theta_E
+
+    def sis_theta_E2sigma_v(self, theta_E):
+        """convert Einstein radius to velocity dispersion for a SIS profile
+
+        Args:
+            theta_E (float): Einstein radius [arcsec]
+
+        Returns:
+            float: velocity dispersion [km/s]
+        """
+        sigma_v = np.sqrt(theta_E * const.arcsec / (4 * np.pi) * self.Ds / self.Dds * const.c**2) / 1000
+        return sigma_v
+
