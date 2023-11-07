@@ -6,9 +6,14 @@ __all__ = ['SIS_truncated_physical']
 
 class SIS_truncated_physical(object):
 
-    def __init__(self, sigma, rc):
+    def __init__(self, sigma_v, rc):
+        """the "truncated" SIS profile class
 
-        self.sigma = sigma
+        Args:
+            sigma_v (_type_): _description_
+            rc (_type_): _description_
+        """
+        self.sigma_v = sigma_v
         self.rc = rc
     
     def Density_3d_spherical(self, r):
@@ -24,7 +29,7 @@ class SIS_truncated_physical(object):
         Returns:
             _type_: _description_
         """
-        return ((self.sigma * u.km / u.s)**2 / (2 * np.pi * const.G) / ((r * u.kpc)**2 * (1 + r**2/self.rc**2))).to(u.M_sun / u.kpc**3).value
+        return ((self.sigma_v * u.km / u.s)**2 / (2 * np.pi * const.G) / ((r * u.kpc)**2 * (1 + r**2/self.rc**2))).to(u.M_sun / u.kpc**3).value
 
 
     def Density_3d_triaxial(self, x, y, z, zeta, xi, get_effective_radius = False):
@@ -42,14 +47,14 @@ class SIS_truncated_physical(object):
         """
 
         av_sq = (zeta * xi)**(2/3) * (x**2 + y**2/zeta**2 + z**2/xi**2)
-        density = ((self.sigma * u.km / u.s)**2 / (2 * np.pi * const.G) / (av_sq * u.kpc**2 * (1 + av_sq/self.rc**2))).to(u.M_sun / u.kpc**3).value
+        density = ((self.sigma_v * u.km / u.s)**2 / (2 * np.pi * const.G) / (av_sq * u.kpc**2 * (1 + av_sq/self.rc**2))).to(u.M_sun / u.kpc**3).value
         if get_effective_radius:
             return density, np.sqrt(av_sq)
         else:
             return density
         
 
-    def Density_in_project(self, z, as_sq):
+    def Project_integrand(self, z, as_sq):
         """Integrand of density in LoS integration [M_sun/kpc^3]
 
         Args:
@@ -59,7 +64,7 @@ class SIS_truncated_physical(object):
         Returns:
             _type_: _description_
         """
-        return ((self.sigma * u.km / u.s)**2 / (2 * np.pi * const.G * (z**2 + as_sq) * u.kpc**2 * (1 + (z**2 + as_sq)/self.rc**2))).to(u.M_sun / u.kpc**3).value
+        return ((self.sigma_v * u.km / u.s)**2 / (2 * np.pi * const.G * (z**2 + as_sq) * u.kpc**2 * (1 + (z**2 + as_sq)/self.rc**2))).to(u.M_sun / u.kpc**3).value
 
 
         

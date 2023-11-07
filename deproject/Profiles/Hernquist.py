@@ -4,16 +4,14 @@ __all__ = ['Hernquist']
 
 class Hernquist:
 
-    def __init__(self, unit, Rs, rho0=None, sigma0=None):
-        if unit == 'arcsec':
-            if not ((rho0 == None) and (sigma0 != None)):
-                raise ValueError('When unit is arcsec, input only Rs and sigma0 in angular units!')
-            rho0 = self.sigma02rho(sigma0=sigma0, Rs=Rs)
-        elif unit == 'pix':
-            if not ((rho0 != 0) and (sigma0 == None)):
-                raise ValueError('When unit is pix, input only Rs and rho0 in pixel unit!')
-        else:
-            raise ValueError('Available units: [arcsec, pix].')
+    def __init__(self, Rs, sigma0):
+        """The Hernquist profile class
+
+        Args:
+            Rs (_type_): _description_
+            sigma0 (_type_): _description_
+        """
+        rho0 = self.sigma02rho(sigma0=sigma0, Rs=Rs)
         self.rho0 = rho0
         self.Rs = Rs
 
@@ -30,7 +28,41 @@ class Hernquist:
         """
         return sigma0 / Rs
 
-    def Density_in_project(self, z, as_sq):
+
+    def Density_spherical(self, rad):
+        """3d density 
+
+        Args:
+            rad (_type_): radius [arcsec]
+
+        Returns:
+            _type_: _description_
+        """
+        return self.rho0 / ((rad / self.Rs) * (1 + (rad / self.Rs))**3)
+
+    def Density_triaxial(self, x, y, z, zeta, xi, get_effective_radius = False):
+        """3d density
+
+        Args:
+            x (_type_): x coordinate, aligned with intrinsic major axis
+            y (_type_): y coordinate, aligned with intrinsic intermediate axis
+            z (_type_): z xoordinate, aligned with intrinsic minor axis
+            zeta (_type_): intrinsic axis ratio b/a
+            xi (_type_): intrinsic axis ratio c/a
+            get_effective_radius (bool, optional): whether to return effective radius. Defaults to False.
+
+        Returns:
+            _type_: _description_
+        """
+        av = (zeta * xi)**(1/3) * np.sqrt(x**2 + y**2/zeta**2 + z**2/xi**2)
+        density = self.rho0 / ((av / self.Rs) * (1 + (av / self.Rs))**3)
+
+        if get_effective_radius:
+            return density, av
+        else:
+            return av
+
+    def Project_integrand(self, z, as_sq):
         """Integrand in projection integral, z to be integrated 
 
         Args:
@@ -41,4 +73,3 @@ class Hernquist:
             float: density in projection
         """
         return self.rho0 / ((np.sqrt(z**2 + as_sq)/ self.Rs) * (1 + (np.sqrt(z**2 + as_sq)/ self.Rs))**3)
-

@@ -4,16 +4,14 @@ __all__ = ['NFW']
 
 class NFW(object):
 
-    def __init__(self, Rs, unit, rho0=None, alpha_Rs=None):
-        if unit == 'arcsec':
-            if not ((rho0 == None) and (alpha_Rs != None)):
-                raise ValueError('When unit is arcsec, input only Rs and alpha_Rs in arcsec!')
-            rho0 = self.alpha2rho0(alpha_Rs=alpha_Rs, Rs=Rs)
-        elif unit == 'pix':
-            if not ((rho0 != 0) and (alpha_Rs == None)):
-                raise ValueError('When unit is pix, input only Rs and rho0 in pixel unit!')
-        else:
-            raise ValueError("Available units: ['arcsec', 'pix'].")
+    def __init__(self, alpha_Rs, Rs):
+        """the NFW profile class
+
+        Args:
+            alpha_Rs (_type_): _description_
+            Rs (_type_): _description_
+        """
+        rho0 = self.alpha2rho0(alpha_Rs=alpha_Rs, Rs=Rs)
         self.rho0 = rho0
         self.Rs = Rs
 
@@ -31,7 +29,13 @@ class NFW(object):
         rho0 = alpha_Rs / (4. * Rs**2 * (1. + np.log(0.5)))
         return rho0
 
-    def Density_in_project(self, z, as_sq):
+    def Density_spherical(self, R):
+        return 0
+
+    def Density_triaxial(self):
+        return 0
+
+    def Project_integrand(self, z, as_sq):
         """Integrand in projection integral, z to be integrated 
 
         Args:

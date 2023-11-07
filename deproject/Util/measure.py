@@ -119,7 +119,7 @@ def _Deivative(y, x, y_type='log', x_type='log'):
     return interp1d(x, derivative, kind='linear', fill_value='extrapolate')
 
 
-def effective_einstein_radius_grid(radial_profile, R_average):
+def einstein_radius_from_rp(radial_profile, R_average):
     
     # define a finer grid for interpolation
     interp_func = interp1d(np.log10(R_average), np.log10(radial_profile))
