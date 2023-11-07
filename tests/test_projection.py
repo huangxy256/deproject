@@ -1,99 +1,75 @@
 import numpy.testing as npt
 import numpy as np
+import pytest
 
-import deproject.Profiles.Hernquist
-import deproject.projection
+from deproject.Profiles.hernquist import Hernquist
+from deproject.projection import Projection
+from deproject.Cosmo.default_cosmo import get_default_lens_cosmo
+from lenstronomy.LensModel.lens_model import LensModel
 
-from lenstronomy.LightModel.light_model import LightModel
-
-def test_Project_2d():
+class TestProjection(object):
     
-    rho0 = 8.0
-    Rs = 1.0
+    def setup_method(self):
+        self.projection = Projection(zeta = 0.5, xi = 0.5, theta = 0, phi = 0)
+        self.projection_sph = Projection(zeta=1, xi=1, theta=0, phi=0)
 
-    profile = deproject.Profiles.Hernquist.Hernquist(rho0=rho0, Rs=Rs)
+    def test_Cap_A(self):
+        npt.assert_almost_equal(self.projection.Cap_A, (0.25)**(-2.0/3.0))
 
-    zeta = 1.0
-    xi = 1.0
-    theta = 0.5
-    phi = 0.6
+    def test_Cap_B(self):
+        npt.assert_almost_equal(self.projection.Cap_B, 0)
+    
+    def test_Cap_C(self):
+        npt.assert_almost_equal(self.projection.Cap_C, (0.25)**(1.0/3.0))
 
-    x = np.linspace(-10, 10, num = 100)
-    y = np.linspace(-10, 10, num = 100)
+    def test_Lcase_f(self):
+        npt.assert_almost_equal(self.projection.Lcase_f, (0.25)**(-1.0/3.0))
 
-    xx, yy = np.meshgrid(x, y)
+    def test_AxisRatio(self):
+        npt.assert_almost_equal(self.projection.AxisRatio(), 0.5)
 
-    sigma = deproject.projection.Project_2d(x_grid=xx, y_grid=yy, zeta=zeta, xi=xi, phi=phi, theta=theta, profile=profile)
+    def test_Ellipticity(self):
+        npt.assert_almost_equal(self.projection.Ellipticity(), 1.0/3.0)
 
-    e1_he = 0.
-    e2_he = 0.
+    def test_Orientation_phi(self):
+        pass
 
-    light_model = LightModel(light_model_list = ['HERNQUIST_ELLIPSE'])
-    kwargs_light = [{'amp': rho0, 'Rs': Rs, 'e1': -e1_he, 'e2': e2_he}]
-    sigma_lenstronomy = light_model.surface_brightness(xx, yy, kwargs_light)
+    def test_RadialProfile(self):
+        R = np.logspace(np.log10(0.001), np.log10(100), num = 50)
+        lens_cosmo = get_default_lens_cosmo()
+        M_star = 1e11
+        Rs_Mpc = 0.008
+        sigma0, Rs_angle_star = lens_cosmo.hernquist_physical2angle(M=M_star, Rs=Rs_Mpc)
+        hernquist = Hernquist(Rs=Rs_angle_star, sigma0=sigma0)
+        radial_profile = self.projection_sph.RadialProfile(R=R, profile=hernquist)[0]
 
-    npt.assert_almost_equal(sigma, sigma_lenstronomy, decimal = 5)
+        lens_list = ['HERNQUIST']
+        lens_model = LensModel(lens_list)
+        kwargs_lens = [{'sigma0': sigma0, 'Rs': Rs_angle_star}]
+        radial_kappa = lens_model.kappa(x=R, y=0, kwargs = kwargs_lens)
+
+        npt.assert_almost_equal(radial_profile, radial_kappa, decimal = 6)
+
+    def test_Project_2d(self):
+        x = np.linspace(0.01, 80, num = 50)
+        y = np.linspace(0.01, 80, num = 50)
+        xx, yy = np.meshgrid(x, y)
+
+        lens_cosmo = get_default_lens_cosmo()
+        M_star = 1e11
+        Rs_Mpc = 0.008
+        sigma0, Rs_angle_star = lens_cosmo.hernquist_physical2angle(M=M_star, Rs=Rs_Mpc)
+        hernquist = Hernquist(Rs=Rs_angle_star, sigma0=sigma0)
+        kappa_numer = self.projection_sph.Project_2d(x_grid=xx, y_grid=yy, profile=hernquist)
+
+        lens_list = ['HERNQUIST']
+        lens_model = LensModel(lens_list)
+        kwargs_lens = [{'sigma0': sigma0, 'Rs': Rs_angle_star}]
+        kappa_lenst = lens_model.kappa(x = xx, y=yy, kwargs = kwargs_lens)
+
+        npt.assert_almost_equal(kappa_numer, kappa_lenst, decimal = 6)
 
 
-def test_RadialProfile():
+if __name__ == '__main__':
+    pytest.main()
 
-    rho0 = 8.0
-    Rs = 1.0
-
-    profile = deproject.Profiles.Hernquist.Hernquist(rho0=rho0, Rs=Rs)
-
-    zeta = 1.0
-    xi = 1.0
-    theta = 0.5
-    phi = 0.6
-
-    xpp = np.logspace(np.log10(0.01), np.log10(10), num = 100)
-
-    sigma_rad = deproject.projection.RadialProfile(x_major=xpp, zeta=zeta, xi=xi, theta=theta, phi=phi, profile=profile)
-
-    e1_he = 0.
-    e2_he = 0.
-
-    light_model = LightModel(light_model_list = ['HERNQUIST_ELLIPSE'])
-    kwargs_light = [{'amp': rho0, 'Rs': Rs, 'e1': -e1_he, 'e2': e2_he}]
-    sigma_rad_lenstronomy = light_model.surface_brightness(x=xpp, y=0, kwargs_list=kwargs_light)
-
-    npt.assert_almost_equal(sigma_rad, sigma_rad_lenstronomy, decimal = 3)
-
-
-def test_RadialProfile_any():
-
-    # todo: complete this part
-
-    # convert the following into test functions of RadialProfile_any
-
-    # theta = 1.3
-    # phi = 4.5
-
-    # rad = np.logspace(np.log10(0.1), np.log10(10), num = 50)
-    # radial_average = RadialProfile(rad, zeta = zeta_single, xi = xi_single, theta = theta, phi = phi, profile = profile_sis)
-
-    # plt.loglog(radial_average[1], radial_average[0], label = 'average')
-
-    # radial_average_new = RadialProfile_any(x = rad, x_type= 'average', zeta = zeta_single, xi = xi_single, theta = theta, phi = phi, profile = profile_sis)
-
-    # plt.loglog(radial_average_new[1], radial_average_new[0], label = 'average_new')
-
-    # radial_major = RadialProfile_any(x = rad, x_type= 'major', zeta = zeta_single, xi = xi_single, theta = theta, phi = phi, profile = profile_sis)
-
-    # radial_minor = RadialProfile_any(x = rad, x_type= 'minor', zeta = zeta_single, xi = xi_single, theta = theta, phi = phi, profile = profile_sis)
-
-    # axis_ratio = AxisRatio(zeta = zeta_single, xi = xi_single, theta = theta, phi = phi)
-
-    # plt.loglog(radial_major[1], radial_major[0], label = 'major')
-    # plt.loglog(radial_minor[1], radial_minor[0], label = 'minor')
-
-    # plt.loglog(radial_major[1] * axis_ratio, radial_major[0], label = 'minor from major', ls = '--')
-
-    # plt.loglog(radial_major[1] * np.sqrt(axis_ratio), radial_major[0], ls = '-.', label = 'average from major')
-
-    # plt.loglog(radial_minor[1] / np.sqrt(axis_ratio), radial_minor[0], ls = ':', label = 'average from minor')
-
-    # print(axis_ratio)
-
-    # plt.legend()
