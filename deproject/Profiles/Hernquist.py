@@ -29,18 +29,18 @@ class Hernquist:
         return sigma0 / Rs
 
 
-    def Density_spherical(self, rad):
+    def Density_3d_spherical(self, r):
         """3d density 
 
         Args:
-            rad (_type_): radius [arcsec]
+            r (_type_): radius [arcsec]
 
         Returns:
             _type_: _description_
         """
-        return self.rho0 / ((rad / self.Rs) * (1 + (rad / self.Rs))**3)
+        return self.rho0 / ((r / self.Rs) * (1 + (r / self.Rs))**3)
 
-    def Density_triaxial(self, x, y, z, zeta, xi, get_effective_radius = False):
+    def Density_3d_triaxial(self, x, y, z, zeta, xi, get_effective_radius = False):
         """3d density
 
         Args:
@@ -60,7 +60,7 @@ class Hernquist:
         if get_effective_radius:
             return density, av
         else:
-            return av
+            return density
 
     def Project_integrand(self, z, as_sq):
         """Integrand in projection integral, z to be integrated 

@@ -8,17 +8,27 @@ rad2arcsec = 360 * 3600 / 2 / np.pi
 
 class SIS_truncated_angular(object):
 
-    def __init__(self, sigma_v, lens_cosmo, rc = None):
+    def __init__(self, sigma_v, lens_cosmo, rc_arcsec = None, rc_theta_E = None):
         """The "truncated" SIS profile class
 
         Args:
             sigma_v (_type_): velocity dispersion [km/s]
-            rc (_type_): truncation ardius [arcsec]
-            lens_cosmo (_type_): LensCosmo instance
-        """
-        if rc == None:
-            rc = 1000 * lens_cosmo.sis_sigma_v2theta_E(sigma_v)
+            lens_cosmo (_type_): deproject.Cosmo.lens_cosmo.LensCosmo instance
+            rc_arcsec (_type_, optional): truncation radius in arcsec. Defaults to None. 
+            rc_theta_E (_type_, optional): truncation radius in units of theta_E. Defaults to None.
 
+        Raises:
+            ValueError: Specified both rc_arcsec and rc_theta_E
+        """
+        if rc_arcsec == None and rc_theta_E == None:
+            rc = 200 * lens_cosmo.sis_sigma_v2theta_E(sigma_v)
+        elif rc_arcsec != None and rc_theta_E == None:
+            rc = rc_arcsec
+        elif rc_arcsec == None and rc_theta_E != None:
+            rc = rc_theta_E * lens_cosmo.sis_sigma_v2theta_E(sigma_v)
+        else:
+            raise ValueError('Input either rc_arcsec or rc_theta_E!')
+            
         self.sigma_v = sigma_v
         self.rc = rc
         self.lens_cosmo = lens_cosmo

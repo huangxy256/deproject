@@ -19,14 +19,16 @@ def sum_gaussian_components(x, peaks, sigmas):
 
     return total
 
-def plot_mge(amplitude, sigma, rad, radial_profile):
+def plot_mge(amplitude, sigma, rad, radial_profile=None, plot_radial_profile=0):
 
     fig = plt.figure(figsize = (7, 7))
     gs = fig.add_gridspec(2, hspace = 0.03)
     ax = gs.subplots(sharex = True)
 
-    ax[0].plot(rad, radial_profile, marker = 'o', label = 'radial profile')
     gs_sum = sum_gaussian_components(rad, amplitude, sigma)
+    if plot_radial_profile:
+        ax[0].plot(rad, radial_profile, marker = 'o', label = 'radial profile')
+        ax[1].plot(rad, (radial_profile - gs_sum) / radial_profile * 100., c = ax[0].get_lines()[1].get_color(), marker = ' ')
     ax[0].plot(rad, gs_sum, ls = '-', marker = ' ', label = 'Gaussian sum')
 
     ax[0].set_yscale('log')
@@ -35,7 +37,6 @@ def plot_mge(amplitude, sigma, rad, radial_profile):
 
     ax[0].legend()
 
-    ax[1].plot(rad, (radial_profile - gs_sum) / radial_profile * 100., c = ax[0].get_lines()[1].get_color(), marker = ' ')
     ax[1].set_ylim([-15, 15])
     ax[1].axhline(0., ls = '--', c = ax[0].get_lines()[0].get_color())
     ax[1].set_ylabel('residuals [%]')

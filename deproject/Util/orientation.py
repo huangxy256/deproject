@@ -1,6 +1,6 @@
 import numpy as np
 
-def Inclination(ellipsoid_type, theta, phi):
+def _Inclination(ellipsoid_type, theta, phi):
     """Calculate inclination angle of axisymmetric ellipsoid
 
     Args:
@@ -20,6 +20,32 @@ def Inclination(ellipsoid_type, theta, phi):
         return inc
     else:
         raise ValueError("Supported ellipsoid_type: ['oblate', 'prolate'].")
+
+
+def Inclination(oblate, theta, phi, deg = 1):
+    """Calculate inclination angle of axisymmetric ellipsoid
+
+    Args:
+        oblate (bool): oblate or prolate
+        theta (float): projection angle theta [rad]
+        phi (float): projection angle phi [rad]
+
+    Returns:
+        float: inclination angle [deg]
+    """
+    if oblate == 1:
+        inc = theta
+    else:
+        inc = np.arccos(np.cos(phi) * np.sin(theta))
+        inc = np.where(inc > np.pi/2, np.pi - inc, inc)
+    
+    if deg == 1:
+        inc = np.degrees(inc)
+    else:
+        pass
+    
+    return inc
+    
 
 
 def Sphere_random_point(num):

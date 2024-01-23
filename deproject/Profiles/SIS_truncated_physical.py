@@ -10,8 +10,8 @@ class SIS_truncated_physical(object):
         """the "truncated" SIS profile class
 
         Args:
-            sigma_v (_type_): _description_
-            rc (_type_): _description_
+            sigma_v (_type_): velocity dispersion [km/s]
+            rc (_type_): truncation radius [kpc]
         """
         self.sigma_v = sigma_v
         self.rc = rc

@@ -29,7 +29,7 @@ def get_truncsis_mge(sigma_v, lens_cosmo, projection, shape, rc = None, r_min = 
     Returns:
         _type_: _description_
     """
-    profile_sis = SIS_truncated_angular(sigma_v=sigma_v, rc = rc, lens_cosmo=lens_cosmo)
+    profile_sis = SIS_truncated_angular(sigma_v=sigma_v, rc_arcsec = rc, lens_cosmo=lens_cosmo)
 
     rad_arcsec = np.logspace(np.log10(r_min), np.log10(r_max), num = r_num)
 
