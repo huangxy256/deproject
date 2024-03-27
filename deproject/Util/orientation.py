@@ -61,3 +61,20 @@ def Sphere_random_point(num):
     theta = np.arccos(u)
     phi = np.pi * v
     return theta, phi
+
+
+
+def Isotropic_inclination(num, oblate, deg=0):
+    """Sample inclination angle isotropically
+
+    Args:
+        num (_type_): number of inclination angles 
+        oblate (_type_): oblate or prolate
+        deg (int, optional): whether to return the inclination angle in degrees or in radians. Defaults to 0 (radians).
+
+    Returns:
+        _type_: array of isotropic inclination angle
+    """
+    theta, phi = Sphere_random_point(num)
+    inc = Inclination(oblate=oblate, theta=theta, phi=phi, deg=deg)
+    return inc
