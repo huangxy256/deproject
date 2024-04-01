@@ -7,14 +7,15 @@ deproject
 
 
 
-Functions used in deprojection project
-
+Deproject is a package for the projection of some simple mass density / luminosity profiles of galaxies. 
 
 
 Features
 --------
 
-* TODO
+* Projection of triaxial profiles 
+* Projection of axymmetric profiles with MGE parameterization
+* Visualization of the projected profile
 
 Credits
 -------
