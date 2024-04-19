@@ -119,31 +119,41 @@ def _Deivative(y, x, y_type='log', x_type='log'):
     return interp1d(x, derivative, kind='linear', fill_value='extrapolate')
 
 
-def einstein_radius_from_rp(radial_profile, R_average):
-    
+def einstein_radius_from_rp(radial_profile, R_circ, R_min=1e-3, R_max=1e1):
+    """Compute the Einstein radius from the circularized radial profile
+
+    Args:
+        radial_profile (arr of float): circularized radial profile of mass density
+        R_circ (arr of float): circularized radius
+        R_min (float, optional): minimum radius of the convergence integrand. Defaults to 1e-3.
+        R_max (_type_, optional): maximum radius of the convergence integrand (should be larger than the Einstein radius). Defaults to 1e1.
+
+    Returns:
+        float: estimate of the Einstein radius
+    """
     # define a finer grid for interpolation
-    interp_func = interp1d(np.log10(R_average), np.log10(radial_profile))
-    R_average = np.logspace(np.log10(R_average[0]), np.log10(R_average[-1]), num = 10 * R_average.shape[0])
-    radial_profile = 10**interp_func(np.log10(R_average))
+    interp_func = interp1d(np.log10(R_circ), np.log10(radial_profile))
+    R_finer = np.geomspace(R_min, R_max, 10 * len(R_circ))
+    radial_profile = 10**interp_func(np.log10(R_finer))
 
     # perform integral in log space
     radial_profile_ = (radial_profile[1:] + radial_profile[:-1]) / 2
-    R_average_ = (R_average[1:] + R_average[:-1]) / 2
-    dlog_r = (np.log10(R_average[2]) - np.log10(R_average[1])) * np.log(10)
+    R_finer_ = (R_finer[1:] + R_finer[:-1]) / 2
+    dlog_r = (np.log10(R_finer[2]) - np.log10(R_finer[1])) * np.log(10)
     # add the mass within the innermost bin and assume it is constant
-    kappa_innermost = radial_profile[0] * np.pi * R_average[0]**2
+    kappa_innermost = radial_profile[0] * np.pi * R_finer[0]**2
 
     # the first part is the logarithmic integrand, the second part the circle integrand
-    kappa_slice = radial_profile_ * dlog_r * R_average_ * (2 * np.pi * R_average_)
+    kappa_slice = radial_profile_ * dlog_r * R_finer_ * (2 * np.pi * R_finer_)
     kappa_slice = np.append(kappa_innermost, kappa_slice)
 
     kappa_cdf = np.cumsum(kappa_slice)
     # calculate average convergence at radius
-    kappa_average = kappa_cdf / (np.pi * R_average**2)
+    kappa_average = kappa_cdf / (np.pi * R_finer**2)
 
     # we interpolate as the inverse function and evaluate this function for average kappa = 1
     # (assumes monotonic decline in average convergence)
-    inv_interp = interp1d(np.log10(kappa_average), np.log10(R_average))
+    inv_interp = interp1d(np.log10(kappa_average), np.log10(R_finer))
     try: 
         theta_E = 10**inv_interp(0)
     except:
