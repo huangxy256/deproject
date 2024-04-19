@@ -133,6 +133,8 @@ def einstein_radius_from_rp(radial_profile, R_circ, R_min=1e-3, R_max=1e1):
     """
     # define a finer grid for interpolation
     interp_func = interp1d(np.log10(R_circ), np.log10(radial_profile))
+    R_min = np.max([R_min, R_circ.min()])
+    R_max = np.min([R_max, R_circ.max()])
     R_finer = np.geomspace(R_min, R_max, 10 * len(R_circ))
     radial_profile = 10**interp_func(np.log10(R_finer))
 
