@@ -48,3 +48,26 @@ def Center_xy(I_xy, x_grid, y_grid, weight_map = None):
     center_y = np.sum(I_xy * y_grid * weight_map) / sum_Ixy
     coord = np.array([center_x, center_y])
     return coord
+
+def Axis_ratio2ellipticity(q):
+    """Compute ellipticity of an ellipse from its axis ratio, e = (1-q) / (1+q)
+
+    Args:
+        q (float): minor axis / major axis
+
+    Returns:
+        float: ellipticity (1-q)/(1+q)
+    """
+    return (1 - q) / (1 + q)
+
+
+def Ellipticity2axis_ratio(e):
+    """Compute the axis ratio of an ellipse from its axis ratio
+
+    Args:
+        e (float): ellipticity = (1-q)/(1 + q)
+
+    Returns:
+        float: minor axis / major axis
+    """
+    return (1 - e) / (1 + e)
