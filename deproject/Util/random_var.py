@@ -2,7 +2,7 @@ import numpy as np
 from scipy.interpolate import interp1d
 import matplotlib.pyplot as plt
 
-def draw_from_pdf(x_pdf, y_pdf, num, plot_cdf=0, plot_hist=0, bins_hist=10):
+def Draw_from_pdf(x_pdf, y_pdf, num, plot_cdf=0, plot_hist=0, bins_hist=10):
     """draw random variable from a probability density function
 
     Args:
