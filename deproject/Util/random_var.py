@@ -36,3 +36,43 @@ def Draw_from_pdf(x_pdf, y_pdf, num, plot_cdf=0, plot_hist=0, bins_hist=10):
         plt.ylabel('PDF')
 
     return var_rm
+
+
+def draw_from_hist(bins, counts, num):
+    """Draw points from a histogram
+
+    Args:
+        bins (array of float): bin edges of the histogram
+        counts (array of float): counts/density of each bin
+        num (int): number of data points to draw
+
+    Returns:
+        array of float: random variables drawn from a histogram
+    """
+    x = np.zeros(num)
+    weights = counts / np.sum(counts)
+    bin_index = np.random.choice(len(bins)-1, p=weights, size=num)
+    for i, bin_ind in enumerate(bin_index):
+        bin_start, bin_end = bins[bin_ind], bins[bin_ind+1]
+        x[i] = np.random.uniform(bin_start, bin_end)
+    return x
+
+
+def draw_from_hist_with_lo_lim(bins, counts, num, lower_lim):
+    """Draw random variables from a histogram with lower cutoff (reject when lower than the cutoff)
+
+    Args:
+        bins (array of float): bin edges of the histogram
+        counts (array of float): counts/density of each bin
+        num (int): number of data points to draw
+        lower_lim (float): lower cutoff
+
+    Returns:
+        array of float: random variables drawn from a histogram
+    """
+    x = draw_from_hist(bins, counts, num)
+    x_ind = np.where(x <= lower_lim)[0]
+    for ind in x_ind:
+        while x[ind] <= lower_lim:
+            x[ind] = draw_from_hist(bins, counts, 1)[0]
+    return x
