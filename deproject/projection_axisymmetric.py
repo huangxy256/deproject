@@ -27,7 +27,7 @@ class Projection_axisym(object):
             inc (array of float): inclination angle [rad]
 
         Returns:
-            array of float: observed axis ratio
+            array of float: observed axis ratio, Qobs < 1
         """
         return Projection_axisym._Qobs(self._qintr_oblate, inc)
     
@@ -209,3 +209,23 @@ class Projection_axisym(object):
                 print('Ellipticity {:.4f} out of range!' .format(eobs_arr[i]))
 
         return inc_draw
+
+
+    @staticmethod
+    def Recover_isotropic_inclination(eobs_arr):
+        """Recover incliantion angle for a set of ellipticity assuming the inclination angle is isotropic but has a lower limit set by the ellipticity. Difference with method Recover inclination: does not contain intrinsic axis ratio information
+
+        Args:
+            eobs_arr (arr of float): input ellipticity
+
+        Returns:
+            _type_: reocevered inclination angle [rad]
+        """
+        Qobs_arr = Ellipticity2axis_ratio(eobs_arr)
+        inc_min = Projection_axisym.Inc_min(Qobs_arr)
+        inc_iso = Isotropic_inclination(len(eobs_arr))
+        ind_redraw = np.where(inc_iso < inc_min)[0]
+        for ind in ind_redraw:
+            while inc_iso[ind] < inc_min[ind]:
+                inc_iso[ind] = Isotropic_inclination(1)[0]
+        return inc_iso
