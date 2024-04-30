@@ -38,7 +38,7 @@ def Draw_from_pdf(x_pdf, y_pdf, num, plot_cdf=0, plot_hist=0, bins_hist=10):
     return var_rm
 
 
-def draw_from_hist(bins, counts, num):
+def Draw_from_hist(bins, counts, num):
     """Draw points from a histogram
 
     Args:
@@ -58,7 +58,7 @@ def draw_from_hist(bins, counts, num):
     return x
 
 
-def draw_from_hist_with_lo_lim(bins, counts, num, lower_lim):
+def Draw_from_hist_with_lo_lim(bins, counts, num, lower_lim):
     """Draw random variables from a histogram with lower cutoff (reject when lower than the cutoff)
 
     Args:
@@ -70,9 +70,9 @@ def draw_from_hist_with_lo_lim(bins, counts, num, lower_lim):
     Returns:
         array of float: random variables drawn from a histogram
     """
-    x = draw_from_hist(bins, counts, num)
+    x = Draw_from_hist(bins, counts, num)
     x_ind = np.where(x <= lower_lim)[0]
     for ind in x_ind:
         while x[ind] <= lower_lim:
-            x[ind] = draw_from_hist(bins, counts, 1)[0]
+            x[ind] = Draw_from_hist(bins, counts, 1)[0]
     return x
