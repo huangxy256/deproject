@@ -219,7 +219,7 @@ class Projection_axisym(object):
             eobs_arr (arr of float): input ellipticity
 
         Returns:
-            _type_: reocevered inclination angle [rad]
+            _type_: recovered inclination angle [rad]
         """
         Qobs_arr = Ellipticity2axis_ratio(eobs_arr)
         inc_min = Projection_axisym.Inc_min(Qobs_arr)
