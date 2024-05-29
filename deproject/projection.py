@@ -141,7 +141,7 @@ class Projection(object):
                 Sigma_rad[i] = quad(profile.Project_integrand, 0, np.inf, args = (as_sq))[0] * 2 / np.sqrt(lcase_f)
 
             if interpolate:
-                return interp1d(x=R, y=Sigma_rad)
+                return interp1d(x=R, y=Sigma_rad, fill_value='extrapolate')
             else:
                 return Sigma_rad, R
     
@@ -154,7 +154,7 @@ class Projection(object):
                 Sigma_rad[i] = quad(profile.Project_integrand, 0, np.inf, args = (as_sq))[0] * 2 / np.sqrt(lcase_f)
 
             if interpolate:
-                return interp1d(x=R, y=Sigma_rad)
+                return interp1d(x=R, y=Sigma_rad, fill_value='extrapolate')
             else:
                 return Sigma_rad, R
         
@@ -168,7 +168,7 @@ class Projection(object):
                 Sigma_rad[i] = quad(profile.Project_integrand, 0, np.inf, args = (as_sq))[0] * 2 / np.sqrt(lcase_f)
 
             if interpolate:
-                return interp1d(x=R * np.sqrt(axis_ratio), y=Sigma_rad)
+                return interp1d(x=R * np.sqrt(axis_ratio), y=Sigma_rad, fill_value='extrapolate')
             else:
                 return Sigma_rad, np.sqrt(axis_ratio) * R
         
