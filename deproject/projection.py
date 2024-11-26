@@ -93,11 +93,11 @@ class Projection(object):
         ellipticity = (1 - axis_ratio) / (1 + axis_ratio)
         return ellipticity
 
-    def Orientation_phi(self):
-        """compute the orientation angle of the apparent major axis of the ellipse and the intrinsic major axis of the 3d ellipsoid
+    def PA_phi(self):
+        """compute the position angle of the apparent major axis of the ellipse and the intrinsic major axis of the 3d ellipsoid
 
         Returns:
-            _type_: orientation angle [rad]
+            _type_: position angle [rad]
         """
         cap_A = self.Cap_A
         cap_B = self.Cap_B
@@ -182,7 +182,7 @@ class Projection(object):
         Args:
             x_grid (_type_): a grid of x coordinates
             y_grid (_type_): a gird of y coordinates
-            profile (_type_): a "profile" class instance, contains the integrand for projection alopng the LoS
+            profile (_type_): a "profile" class instance, contains the integrand for projection along the LoS
 
         Returns:
             _type_: projected light/mass profile on a plane

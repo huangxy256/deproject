@@ -38,7 +38,7 @@ class NFW(object):
         Returns:
             _type_: density as a function of radius [Sigma_crit]
         """
-        return self.rho0 / ((rad / self.Rs) * (1 + (rad / Rs)**2))
+        return self.rho0 / ((rad / self.Rs) * (1 + (rad / self.Rs)**2))
 
     def Density_triaxial(self, x, y, z, zeta, xi, get_effective_radius=False):
         """3d density
@@ -55,7 +55,7 @@ class NFW(object):
             _type_: density as a function of effective radius [Sigma_crit]
         """
         av = (zeta * xi)**(1/3) * np.sqrt(x**2 + y**2/zeta**2 + z**2/xi**2)
-        density = self.rho0 / ((av / self.Rs) * (1 + (av / Rs)**2))
+        density = self.rho0 / ((av / self.Rs) * (1 + (av / self.Rs)**2))
         
         if get_effective_radius:
             return density, av
