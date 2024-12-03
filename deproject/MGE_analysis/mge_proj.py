@@ -1,5 +1,5 @@
 import numpy as np 
-from deproject.Kinematics.mge_misc import sum_gaussian_components
+from deproject.MGE_analysis.mge_misc import sum_gaussian_components
 
 class MGE_Proj(object):
 

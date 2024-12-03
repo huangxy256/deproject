@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 import numpy.testing as npt
 
-from deproject.Kinematics.intr_mge import Intr_MGE, Intr_MGE_rescale_amp
+from deproject.MGE_analysis.intr_mge import Intr_MGE, Intr_MGE_rescale_amp
 from deproject.Profiles.SIS_truncated_physical import SIS_truncated_physical
 
 
@@ -25,3 +25,5 @@ class TestIntr_MGE(object):
         mass_axi = self.Intr_MGE.MGE_mass() / 1e13
         npt.assert_almost_equal(mass_axi, mass_sph)
 
+if __name__ == 'main':
+    pytest.main()

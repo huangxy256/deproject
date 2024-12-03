@@ -62,10 +62,10 @@ def Axis_ratio2ellipticity(q):
 
 
 def Ellipticity2axis_ratio(e):
-    """Compute the axis ratio of an ellipse from its axis ratio
+    """Compute the axis ratio of an ellipse from its ellipticity
 
     Args:
-        e (float): ellipticity = (1-q)/(1 + q)
+        e (float): ellipticity = (1 - q)/(1 + q)
 
     Returns:
         float: minor axis / major axis

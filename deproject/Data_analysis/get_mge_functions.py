@@ -2,7 +2,7 @@ from deproject.Profiles.sis_truncated_angular import *
 from deproject.Profiles.hernquist import Hernquist
 from deproject.projection import Projection
 from mgefit.mge_fit_1d import mge_fit_1d
-from deproject.Kinematics import mge_misc
+from deproject.MGE_analysis import mge_misc
 import numpy as np
 
 
