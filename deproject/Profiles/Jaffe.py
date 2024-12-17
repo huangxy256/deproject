@@ -1,46 +1,18 @@
 import numpy as np
 
-__all__ = ['Hernquist']
+__all__ = ['Jaffe']
 
-class Hernquist:
+class Jaffe(object):
 
-    def __init__(self, Rs, sigma0):
-        """The Hernquist profile class
+    def __init__(self, rs, rho0):
+        """class to manage the Jaffe profile, which is rho(r) = rho0 * (r/rs)^(-2) * (1 + r/rs)^(-2)
 
         Args:
-            Rs (_type_): _description_
-            sigma0 (_type_): _description_
+            rs (_type_): scale radius 
+            rho0 (_type_): mass normalization parameter
         """
-        rho0 = self.sigma02rho(sigma0=sigma0, Rs=Rs)
+        self.rs = rs
         self.rho0 = rho0
-        self.Rs = Rs
-
-    @staticmethod
-    def sigma02rho(sigma0, Rs):
-        """convert sigma0 to 3d density normalisation
-
-        Args:
-            sigma0 (float): projected surface density [Sigma_crit]
-            Rs (float): scale radius [arcsec]
-
-        Returns:
-            float: 3d density normalisation [Sigma_crit arcsec^-1]
-        """
-        return sigma0 / Rs
-    
-    @staticmethod
-    def rho2sigma0(rho0, Rs):
-        """convert rho0 to sigma0
-
-        Args:
-            rho0 (float): mass normalization on the r dimension * 4 * pi
-            Rs (float): scale radius [arcsec]
-
-        Returns:
-            float: sigma0 [Sigma_crit]
-        """
-        return rho0 * Rs
-
 
     def Density_3d_spherical(self, r):
         """3d density 
@@ -51,8 +23,8 @@ class Hernquist:
         Returns:
             _type_: _description_
         """
-        return self.rho0 / ((r / self.Rs) * (1 + (r / self.Rs))**3)
-
+        return self.rho0 * (r / self.rs)**(-2) * (1 + (r / self.rs))**(-2)
+    
     def Density_3d_triaxial(self, x, y, z, zeta, xi, get_effective_radius = False):
         """3d density
 
@@ -68,13 +40,13 @@ class Hernquist:
             _type_: _description_
         """
         av = (zeta * xi)**(1/3) * np.sqrt(x**2 + y**2/zeta**2 + z**2/xi**2)
-        density = self.rho0 / ((av / self.Rs) * (1 + (av / self.Rs))**3)
+        density = self.rho0 * (av / self.rs)**(-2) * (1 + (av / self.rs))**(-2)
 
         if get_effective_radius:
             return density, av
         else:
             return density
-
+        
     def Project_integrand(self, z, as_sq):
         """Integrand in projection integral, z to be integrated 
 
@@ -85,4 +57,4 @@ class Hernquist:
         Returns:
             float: density in projection
         """
-        return self.rho0 / ((np.sqrt(z**2 + as_sq)/ self.Rs) * (1 + (np.sqrt(z**2 + as_sq)/ self.Rs))**3)
+        return self.rho0 / ((np.sqrt(z**2 + as_sq)/ self.rs)**2 * (1 + (np.sqrt(z**2 + as_sq)/ self.rs))**2)
